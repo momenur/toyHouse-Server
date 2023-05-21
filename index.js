@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config()
 const app = express();
@@ -39,6 +39,17 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/allToy/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id)}
+            const result = await allToyCollection.findOne(query)
+            res.send(result);
+        })
+
+        app.post('/allToy', async(req, res) => {
+            const newToy = req.body;
+            console.log(newToy);
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -55,9 +66,7 @@ app.get('/', (req, res) => {
     res.send('TOY World Server is Running')
 })
 
-// User Name: momenurislam6
-// Password: X1r9zEQIz2HzBmuw
-// X1r9zEQIz2HzBmuw
+
 
 app.listen(port, () => {
     console.log(`Toy World Server is Running on port ${port}`);
