@@ -6,7 +6,23 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+// app.use(cors());
+// const corsConfig = {
+//     origin: '*',
+//     credentials: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE']
+// }
+// app.use(cors(corsConfig))
+// app.options("", cors(corsConfig))
+const corsOptions ={
+    origin:'*', 
+    credentials:true,
+    optionSuccessStatus:200,
+ }
+ 
+ app.use(cors(corsOptions))
+
+ 
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vrpqnh1.mongodb.net/?retryWrites=true&w=majority`;
@@ -23,25 +39,25 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+
 
         const allToyCollection = client.db('toyhouse').collection('allToy')
 
-        app.get('/allToy', async(req, res) => {
+        app.get('/allToy', async (req, res) => {
             const cursor = allToyCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.get('/allToy/:id', async(req, res) => {
+        app.get('/allToy/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await allToyCollection.findOne(query)
             res.send(result);
         })
-        
 
-        app.get('/allToy/:email', async(req, res) => {
+
+        app.get('/allToy/:email', async (req, res) => {
             console.log(req.query);
             const email = req.params.email;
             console.log(email);
@@ -50,21 +66,21 @@ async function run() {
         })
 
 
-        app.get('/allToy/:id', async(req, res) => {
+        app.get('/allToy/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await allToyCollection.findOne(query)
             res.send(result);
         })
 
 
-        app.put('/allToy/:id', async(req, res) => {
+        app.put('/allToy/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id: new ObjectId(id)}
+            const filter = { _id: new ObjectId(id) }
             const options = { upsert: true };
             const updatedToy = req.body;
             const utoy = {
-                $set:{
+                $set: {
                     category: updatedToy.category,
                     detail: updatedToy.detail,
                     photo: updatedToy.photo,
@@ -74,22 +90,22 @@ async function run() {
                     sellerImg: updatedToy.sellerImg,
                     toyName: updatedToy.toyName
                 }
-                
+
             }
             const result = await allToyCollection.updateOne(filter, utoy, options)
         })
 
 
-        app.post('/allToy', async(req, res) => {
+        app.post('/allToy', async (req, res) => {
             const newToy = req.body;
             console.log(newToy);
             const result = await allToyCollection.insertOne(newToy);
             res.send(result);
         })
 
-        app.delete('/allToy/:id', async(req, res) => {
+        app.delete('/allToy/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await allToyCollection.deleteOne(query);
             res.send(result);
         })
@@ -99,7 +115,7 @@ async function run() {
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
-        
+
     }
 }
 run().catch(console.dir);
