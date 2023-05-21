@@ -49,6 +49,8 @@ async function run() {
         app.post('/allToy', async(req, res) => {
             const newToy = req.body;
             console.log(newToy);
+            const result = await allToyCollection.insertOne(newToy);
+            res.send(result);
         })
 
         // Send a ping to confirm a successful connection
@@ -60,6 +62,7 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
 
 
 app.get('/', (req, res) => {
